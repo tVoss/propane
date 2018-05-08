@@ -72,20 +72,41 @@ def place_box(board):
 
     (x, y) = random.choice(open_spots)
     canidates = get_canidates(board, x, y)
+    while len(canidates) == 0:
+        open_spots.remove((x, y))
+        # You're in trouble now
+        if len(open_spots) == 0:
+            return
+        (x, y) = random.choice(open_spots)
+
     board[y][x] = random.choice(canidates)
     
 def get_canidates(board, x, y):
-    values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    values = set([1, 2, 3, 4, 5, 6, 7, 8, 9])
 
     # Clear out the row
     for box in enumerate(board[y]):
-        values.remove(box)
+        values.discard(box)
 
     # Clear the column
     for j in range(len(board)):
-        values.remove(board[j][x])
+        values.discard(board[j][x])
 
-    return values
+    # Getting weird again
+    i = x % 3
+    j = y % 3
+
+    values.discard(board[j][i])
+    values.discard(board[j][i + 1])
+    values.discard(board[j][i + 2])
+    values.discard(board[j + 1][i])
+    values.discard(board[j + 1][i + 1])
+    values.discard(board[j + 1][i + 2])
+    values.discard(board[j + 2][i])
+    values.discard(board[j + 2][i + 1])
+    values.discard(board[j + 2][i + 2])
+
+    return list(values)
 
 def print_soduko(board):
     string = ''
